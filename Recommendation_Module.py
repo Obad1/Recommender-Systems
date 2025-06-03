@@ -1,17 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 import pandas as pd 
 import numpy as np
 import os
 
-
-
 base_dir = os.path.dirname(__file__)
-
 
 tmdb_data_path = os.path.join(base_dir, 'data', 'tmdb_movies_data.csv')
 small_data_path = os.path.join(base_dir, 'data', 'small_movie_dataset.csv')
@@ -63,21 +57,12 @@ one_hot_encoded[['rating','year_movie_was_created','user_id']] = scaler.fit_tran
 one_hot_encoded.tail()
 
 
-# Running train test split for machine training
-
-# In[23]:
-
-
 from sklearn.model_selection import train_test_split
 
 X = pd.get_dummies(second_merge.drop(columns=['rating']),columns=['genre','director','final_movie_title'],drop_first=True)
 y = second_merge['rating'].values
 
-
-
-
 X_train_val,y_train_val,X_test,y_test = train_test_split(X,y,test_size=0.2,random_state=46)
-
 
 # Make sure both have the same length by truncating the extra samples
 min_length = min(X_train_val.shape[0], y_train_val.shape[0])
@@ -87,12 +72,7 @@ y_train_val = y_train_val[:min_length]
 #ensure both are the same sha
 assert X_train_val.shape[0] == y_train_val.shape[0]
 
-
-
-
 X_train,X_cross_eval,y_train,y_cross_eval = train_test_split(X_train_val,y_train_val,test_size=0.25,random_state= 95)
-
-
 
 y_series = pd.Series(y)  
 
@@ -158,17 +138,10 @@ test_loss =neural_network_model.evaluate([user_ids,movie_ids],ratings)
 print(f"Test Loss(MSE) : {test_loss}")
 
 
-# In[5]:
-
 
 predictions = neural_network_model.predict([user_ids,movie_ids])
 for i in range(20):
     print(f"Actual : {ratings[i]},Predicted : {predictions[i][0]}")
-
-
-# Let's test this
-
-# In[4]:
 
 
 def recommend_movies_for_user(user_id,num_recommendations=5):
@@ -200,10 +173,6 @@ def recommend_movies_for_user(user_id,num_recommendations=5):
     missing_ids = [movie_id for movie_id in unseen_movie_ids if movie_id not in movie_features_array.index]
     print(f"Missing movie IDs in features: {missing_ids}")
 
-
-
-
-
     predictions = neural_network_model.predict([user_ids_array,movie_ids_array])    
 
     top_movie_ids = sorted(
@@ -212,21 +181,12 @@ def recommend_movies_for_user(user_id,num_recommendations=5):
         reverse = True
     )[:num_recommendations]
     return[movie_id for movie_id, _ in top_movie_ids],movie_ids_array
-
-    
-
-    
-
     
 
 recommended_movies, movie_ids = recommend_movies_for_user(3)
 print(movie_ids)
 
 
-# In[107]:
-
-
 user_id = 238
 recommended_movies = recommend_movies_for_user(user_id)
 print(f"The five recommended movies for user {user_id} are : {recommended_movies}")     
-
